@@ -4,8 +4,17 @@
 
 using namespace std;
 
-int prime[] = {2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97,101};
-int sizeOfPrime = (sizeof(prime) / 4) -1;
+//global vars
+int static PRIME[] = {2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97,101};
+int static SIZEOFPRIME = (sizeof(PRIME) / sizeof(PRIME[0])) -1;
+
+static char KEY[] = 
+{'!', '!', '!', '!', '!', '!', '!', 
+ 'A', 'B', 'C', 'D', 'E', 'F', 'G',
+ 'H', 'I', 'J', 'K', 'L', 'M', 'N',
+ 'O', 'P', 'Q', 'R', 'S', 'T', 'U',
+ 'V', 'W', 'X', 'Y', 'Z', ' ', '"',
+ ',', '.', '\''};
 
 //function declarations
 void findPrimeFactors(int, int&, int&);
@@ -14,14 +23,18 @@ int findModInverse(int, int);
 void EuclidianExtended(int, int, int&, int&);
 void decryptToInt(vector<int>&, int, int,int);
 int largePowMod(int base, int exp, int mod);
-void printMessage(vector<int>&,int);
+void decryptToChar(vector<int>& message_int, vector<char>& message_char, int m);
+
+template <typename T>
+void printMessage(vector<T>&,int);
 
 int main()
 {
  //input variables
  int m; //message length
  int input;
- vector<int> message;
+ vector<int> message_int;
+ vector<char> message_char;
 
  //equation variables
  int e; 
@@ -39,7 +52,8 @@ cin >> m;
 for (int i=0; i < m; i++)
 {
     cin >> input;
-    message.push_back(input);
+    message_int.push_back(input);
+    message_char.push_back(' ');
 }
 
 
@@ -53,15 +67,16 @@ t = findTotient(p,q);
 d = findModInverse(e,t);
 
 //step 4. translate encryption -> decrypted integers
-decryptToInt(message, d,n,m);
-//step 5. translate integers -> text
-
+decryptToInt(message_int, d,n,m);
+//step 5. translate integers -> char
+decryptToChar(message_int,message_char, m);
 //DEBUGGING!!!
 cout << "p = " << p << endl;
 cout << "q = " << q << endl;
 cout << "t = " << t << endl;
 cout << "d = " << d << endl;
-cout << "decrypted integer message : "; printMessage(message, m);
+cout << "decrypted integer message : "; printMessage(message_int, m);
+cout << "decrypted char message : "; printMessage(message_char, m);
 
 
 }
@@ -75,16 +90,16 @@ Brute Force Method
 2. if n mod q = 0 then p = n/q and q = q
 3. else "Public key is not valid!"
 */
-if (sqrt(n) > prime[sizeOfPrime])
+if (sqrt(n) > PRIME[SIZEOFPRIME])
 {
     throw invalid_argument("prime is out of list");
 }
 
-for (int i=0; i < sizeOfPrime; i++)
+for (int i=0; i < SIZEOFPRIME; i++)
 {
-    if (n % prime[i] == 0)
+    if (n % PRIME[i] == 0)
     {
-        p = prime[i];
+        p = PRIME[i];
         q = n/p;
         return;
     }
@@ -145,7 +160,16 @@ void decryptToInt(vector<int>& message, int d, int n, int m)
     }
 }
 
-void printMessage(vector<int>& message, int m)
+void decryptToChar(vector<int>& message_int, vector<char>& message_char, int m)
+{
+    for (int i=0; i<m; i++)
+    {
+        message_char[i] = KEY[message_int[i]];
+    }
+}
+
+template <typename T>
+void printMessage(vector<T>& message, int m)
 {
     for (int i=0; i < m ;i++)
     {
@@ -177,7 +201,7 @@ int largePowMod(int base, int exp, int mod)
             exp -= 1;
             continue;
         }
-        
+
         exp = exp / 2;
         base = (base * base) % mod;
     }
