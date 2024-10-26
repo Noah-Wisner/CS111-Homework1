@@ -25,16 +25,13 @@ void decryptToInt(vector<int>&, int, int,int);
 int largePowMod(int base, int exp, int mod);
 void decryptToChar(vector<int>& message_int, vector<char>& message_char, int m);
 
-template <typename T>
-void printMessage(vector<T>&,int);
-
 int main()
 {
  //input variables
  int m; //message length
  int input;
- vector<int> message_int;
- vector<char> message_char;
+ vector<int> message_int; //encrypted->decrypted
+ vector<char> message_char; //copy of decrypted->char
 
  //equation variables
  int e; 
@@ -44,7 +41,7 @@ int main()
  int t; //t=totient == theta(n)
  int d; //decryption key
 
-//given input (e,n,m)
+//inputs (given by user: e,n,m)
 cin >> e >> n;
 cin >> m;
 
@@ -68,16 +65,36 @@ d = findModInverse(e,t);
 
 //step 4. translate encryption -> decrypted integers
 decryptToInt(message_int, d,n,m);
+
 //step 5. translate integers -> char
 decryptToChar(message_int,message_char, m);
-//DEBUGGING!!!
-cout << "p = " << p << endl;
-cout << "q = " << q << endl;
-cout << "t = " << t << endl;
-cout << "d = " << d << endl;
-cout << "decrypted integer message : "; printMessage(message_int, m);
-cout << "decrypted char message : "; printMessage(message_char, m);
 
+//step 6. Print
+//p q t d
+cout << p << " " << q << " " << t << " " << d <<endl;
+
+/*
+TEMPLATED "printMessage()" FUNCTION REMOVED!!!!
+- ints -> require spaces
+- char -> no spaces
+
+decided it would be easiest to have two for loops
+in main to deal with this issue.
+*/
+
+//prints message_int
+for (int i=0; i < m ;i++)
+{
+    cout << message_int[i] << " ";
+}
+cout << endl;
+
+//prints message_char
+for (int i=0; i < m ;i++)
+{
+    cout << message_char[i];
+}
+cout << endl;
 
 }
 
@@ -127,6 +144,7 @@ int findModInverse(int a, int m)
     EuclidianExtended(a,m,x1,y1); 
 
     //UNFINISHED - need to add way to deal with negatives!!!
+    //test below should work
     return ((x1 % m + m) % m);
 }
 
@@ -166,16 +184,6 @@ void decryptToChar(vector<int>& message_int, vector<char>& message_char, int m)
     {
         message_char[i] = KEY[message_int[i]];
     }
-}
-
-template <typename T>
-void printMessage(vector<T>& message, int m)
-{
-    for (int i=0; i < m ;i++)
-    {
-        cout << message[i];
-    }
-    cout << endl;
 }
 
 int largePowMod(int base, int exp, int mod)
